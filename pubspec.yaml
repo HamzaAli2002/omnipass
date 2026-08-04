@@ -1,0 +1,47 @@
+name: omnipass
+description: "OmniPass — the deep-link wallet. Khizex Mobile Engineering Internship, Week 4."
+publish_to: 'none'
+version: 1.0.0+1
+
+environment:
+  sdk: '>=3.3.0 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  # Routing / deep links
+  go_router: ^14.2.0
+  app_links: ^6.3.2
+
+  # State management
+  flutter_riverpod: ^2.5.1
+
+  # Secure storage for tokens/session
+  flutter_secure_storage: ^9.2.2
+
+  # Token structure: signature verification (HMAC simulated "backend" signing)
+  crypto: ^3.0.3
+
+  # QR rendering (ticket screen) + QR scanning (in-app claim flow)
+  qr_flutter: ^4.1.0
+  mobile_scanner: ^5.2.3
+
+  # Permission handling for camera
+  permission_handler: ^11.3.1
+
+  # Local persistence for the wallet (passes survive force-kill)
+  shared_preferences: ^2.3.2
+
+  # Value equality for typed models
+  equatable: ^2.0.5
+
+  cupertino_icons: ^1.0.6
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^4.0.0
+
+flutter:
+  uses-material-design: true

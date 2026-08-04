@@ -1,0 +1,49 @@
+Add the Associated Domains capability in Xcode (Signing & Capabilities tab
+on the Runner target), or directly in ios/Runner/Runner.entitlements:
+
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN"
+  "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>com.apple.developer.associated-domains</key>
+    <array>
+        <string>applinks:omnipass.app</string>
+    </array>
+</dict>
+</plist>
+
+---
+
+For the custom-scheme local-testing fallback (omnipass://t/<token>), add to
+ios/Runner/Info.plist:
+
+<key>CFBundleURLTypes</key>
+<array>
+    <dict>
+        <key>CFBundleURLName</key>
+        <string>app.omnipass.wallet</string>
+        <key>CFBundleURLSchemes</key>
+        <array>
+            <string>omnipass</string>
+        </array>
+    </dict>
+</array>
+
+---
+
+For the https universal link to actually verify, host this at
+https://omnipass.app/.well-known/apple-app-site-association
+(served with Content-Type: application/json, NO .json extension in the path):
+
+{
+  "applinks": {
+    "apps": [],
+    "details": [
+      {
+        "appID": "<TEAMID>.app.omnipass.wallet",
+        "paths": ["/t/*"]
+      }
+    ]
+  }
+}

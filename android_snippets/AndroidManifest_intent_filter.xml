@@ -1,0 +1,54 @@
+<!--
+  Add inside the <activity> block for MainActivity in
+  android/app/src/main/AndroidManifest.xml (the launcher activity, the one
+  with android:launchMode="singleTask" — required so a tapped link resumes
+  the existing task instead of spawning a second instance, which is what
+  makes "warm resume" preserve prior screen state instead of restarting).
+-->
+
+<activity
+    android:name=".MainActivity"
+    android:exported="true"
+    android:launchMode="singleTask"
+    ...>
+
+    <!-- Primary path: verified Android App Link over https -->
+    <intent-filter android:autoVerify="true">
+        <action android:name="android.intent.action.VIEW" />
+        <category android:name="android.intent.category.DEFAULT" />
+        <category android:name="android.intent.category.BROWSABLE" />
+        <data
+            android:scheme="https"
+            android:host="omnipass.app"
+            android:pathPrefix="/t" />
+    </intent-filter>
+
+    <!-- Local-testing fallback: custom scheme, does NOT require domain
+         verification, so it's useful before the assetlinks.json below is
+         actually hosted, but section 3.1 requires the https path above to
+         be the primary, verifiable one for the real submission. -->
+    <intent-filter>
+        <action android:name="android.intent.action.VIEW" />
+        <category android:name="android.intent.category.DEFAULT" />
+        <category android:name="android.intent.category.BROWSABLE" />
+        <data android:scheme="omnipass" android:host="t" />
+    </intent-filter>
+
+</activity>
+
+<!--
+  For android:autoVerify="true" to actually pass verification, host this at
+  https://omnipass.app/.well-known/assetlinks.json :
+
+  [{
+    "relation": ["delegate_permission/common.handle_all_urls"],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "app.omnipass.wallet",
+      "sha256_cert_fingerprints": ["<YOUR_APP_SIGNING_CERT_SHA256_FINGERPRINT>"]
+    }
+  }]
+
+  Get the fingerprint with:
+    keytool -list -v -keystore <your-release-keystore>.jks
+-->
