@@ -1,6 +1,6 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
     <application
-        android:label="omnipass"
+        android:label="OmniPass"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <!-- ADD THIS: forces the barcode-scanning ML model to install with
