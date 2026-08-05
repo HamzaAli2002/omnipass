@@ -16,7 +16,13 @@ class PassCategoryScreen extends ConsumerWidget {
     final walletAsync = ref.watch(walletProvider);
 
     return Scaffold(
-      appBar: AppBar(title: Text(type.label)),
+      backgroundColor: const Color(0xFFF6F7FB),
+      appBar: AppBar(
+        title: Text(type.label),
+        backgroundColor: const Color(0xFFF6F7FB),
+        elevation: 0,
+        foregroundColor: const Color(0xFF1B1F27),
+      ),
       body: walletAsync.when(
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (e, st) => Center(child: Text('Error: $e')),
