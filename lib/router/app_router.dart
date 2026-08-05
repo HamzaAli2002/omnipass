@@ -33,6 +33,25 @@ class AppRoutes {
 final routerProvider = Provider<GoRouter>((ref) {
   return GoRouter(
     initialLocation: AppRoutes.wallet,
+    // go_router automatically tries to match the OS's raw initial route
+    // (the exact URI Android/iOS launched the app with) against our
+    // declared routes — independently of, and *before*, our own
+    // DeepLinkController (built on app_links) gets a chance to handle the
+    // same URI. Since `omnipass://t/<token>` and `https://omnipass.app/t/
+    // <token>` don't match any declared path, go_router throws
+    // "no routes for location" on cold start. This redirect intercepts
+    // that shape and sends it to wallet-home instead of erroring; the real
+    // navigation (to the secure ticket screen) then happens a moment later
+    // when DeepLinkController's own listener processes the same link.
+    redirect: (context, state) {
+      final uri = state.uri;
+      final isRawDeepLink =
+          (uri.scheme == 'omnipass' && uri.host == 't') ||
+          (uri.scheme == 'https' &&
+              uri.host == 'omnipass.app' &&
+              uri.path.startsWith('/t/'));
+      return isRawDeepLink ? AppRoutes.wallet : null;
+    },
     routes: [
       GoRoute(
         path: AppRoutes.wallet,
