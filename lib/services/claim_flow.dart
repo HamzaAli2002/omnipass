@@ -49,23 +49,18 @@ class ClaimFlow {
   ClaimFlow(this.read, this.router);
 
   Future<void> claim(String rawToken) async {
-    debugPrint('OMNIPASS CLAIM: claim() called with rawToken=$rawToken');
     final tokenService = read(tokenServiceProvider);
     final parsed = tokenService.parse(rawToken);
-    debugPrint('OMNIPASS CLAIM: parse result = ${parsed.runtimeType}');
 
     switch (parsed) {
       case TokenParseMalformed():
-        debugPrint('OMNIPASS CLAIM: malformed — ${parsed.reason}');
         router.push(AppRoutes.linkError('malformed'));
         return;
       case TokenParseExpiredByClaim():
-        debugPrint('OMNIPASS CLAIM: expired at parse time');
         router.push(AppRoutes.linkError('expired'));
         return;
       case TokenParseOk():
         final result = await tokenService.exchange(parsed);
-        debugPrint('OMNIPASS CLAIM: exchange result = ${result.runtimeType}');
         await _handleExchange(
             result, parsed.claims.passId, parsed.claims.tokenId);
     }
@@ -80,8 +75,6 @@ class ClaimFlow {
       case ExchangeGranted():
         final pass = _catalog.resolve(result.passId, claimTokenId: tokenId);
         if (pass == null) {
-          debugPrint(
-              'OMNIPASS CLAIM: granted but unknown passId=${result.passId}');
           router.push(AppRoutes.linkError('unknown-pass'));
           return;
         }
@@ -97,8 +90,6 @@ class ClaimFlow {
         );
         await read(walletProvider.notifier).addOrUpdatePass(pass);
 
-        debugPrint(
-            'OMNIPASS CLAIM: navigating to secure ticket for ${pass.id}');
         // Synthesize a correct, poppable back stack: wallet home is the
         // root, then category -> detail -> secure are pushed on top, so
         // back navigation from the deep-linked screen always resolves to
@@ -107,19 +98,14 @@ class ClaimFlow {
         router.push(AppRoutes.category(pass.type));
         router.push(AppRoutes.detail(pass.type, pass.id));
         router.push(AppRoutes.secure(pass.type, pass.id));
-        debugPrint('OMNIPASS CLAIM: navigation calls issued');
 
       case ExchangeRejectedInvalidSignature():
-        debugPrint('OMNIPASS CLAIM: invalid signature');
         router.push(AppRoutes.linkError('invalid'));
       case ExchangeRejectedExpired():
-        debugPrint('OMNIPASS CLAIM: expired at exchange time');
         router.push(AppRoutes.linkError('expired'));
       case ExchangeRejectedAlreadyUsed():
-        debugPrint('OMNIPASS CLAIM: already used');
         router.push(AppRoutes.linkError('already-used'));
       case ExchangeFailedNetwork():
-        debugPrint('OMNIPASS CLAIM: exchange network failure');
         router.push(AppRoutes.loginFallback(passId: passId));
     }
   }

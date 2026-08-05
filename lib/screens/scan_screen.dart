@@ -43,7 +43,6 @@ class _ScanScreenState extends ConsumerState<ScanScreen> {
   void _onDetect(BarcodeCapture capture) {
     if (_handledOne) return;
     final raw = capture.barcodes.firstOrNull?.rawValue;
-    debugPrint('OMNIPASS SCAN: raw value = $raw');
     if (raw == null) return;
 
     final tokenString = _extractTokenFromScannedText(raw);
@@ -55,8 +54,6 @@ class _ScanScreenState extends ConsumerState<ScanScreen> {
     final router = GoRouter.of(context);
     final claimFlow = ClaimFlow(ref.read, router);
     claimFlow.claim(tokenString).catchError((Object e, StackTrace st) {
-      debugPrint('OMNIPASS SCAN: claim() threw: $e');
-      debugPrint('$st');
     });
   }
 
